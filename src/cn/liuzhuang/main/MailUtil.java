@@ -118,14 +118,18 @@ public class MailUtil {
 	 * 
 	 * 参数具体： args[0]:邮件标题; args[1]:邮件正文; args[2]:邮件附件物理文件的绝对路径;
 	 * 
-	 * 执行Demo: java -jar mailSender_r.jar 邮件标题 邮件正文 附件1(要使用绝对路径) 注意:
-	 * 如果有多于1个附件的场合，通过在config.properties中修改attach.files=c:/a.txt,c:/b.txt来添加;
+	 * 执行Demo: java -jar mailSender_r.jar 邮件标题 邮件正文 附件1(要使用绝对路径) 
+	 * 
+	 * 注意:
+	 * 如果有多于1个附件的场合，
+	 * 通过在config.properties中修改attach.files=c:/a.txt,c:/b.txt来添加，
+	 * 并且需要设置attach.files.flag=true。
 	 * 
 	 */
 	public static void main(String[] args) {
 
 		if (args.length < 3) {
-			System.out.println("参数个数不正确,程序未执行.");
+			log.debug("参数个数不正确,程序未执行. 正确需要输入3个参数: 邮件标题 、邮件正文、附件文件!");
 			System.exit(0);
 		}
 
@@ -156,11 +160,13 @@ public class MailUtil {
 		}
 		// 如果在config文件中设置为true, 邮件正文取自配置文件, 否则来自命令行参数
 		if ((message_bool.trim().length() != 0)
-				&& (message_bool.trim().compareToIgnoreCase("flase") == 0)) {
+				&& (message_bool.trim().compareToIgnoreCase("true") == 0)) {
 			message = message_text.trim();
 		} else {
 			message = args[1];
 		}
+		log.info("邮件标题:" + subject);
+		log.info("邮件内容:" + message);
 
 		if (!datasCheck(host, mailFrom, mailTo))
 			return;
@@ -168,12 +174,20 @@ public class MailUtil {
 
 		// 附件
 		List<String> attachList = new ArrayList<String>();
+		// 来自命令行中的附件文件（来自命令行参数）
 		attachList.add(args[2]);
 
-		String[] attachs = ((String) config.get("attach.files")).split(",");
-		for (String vle : attachs) {
-			attachList.add(vle);
+		// 邮件附件 配置值
+		String attach_bool = config.get("attach.files.flag");
+		if ((attach_bool.trim().length() != 0)
+				&& (attach_bool.trim().compareToIgnoreCase("true") == 0)) {
+			// 如果在config文件中设置为true, 配置文件中的邮件附件可以被作为第2个...第n个来进行发送
+			String[] attachs = ((String) config.get("attach.files")).split(",");
+			for (String vle : attachs) {
+				attachList.add(vle);
+			}
 		}
+		// 类型转换: 由ArrayList转换成String[]
 		String[] attachFiles = (String[]) attachList.toArray(new String[0]);
 
 		try {
