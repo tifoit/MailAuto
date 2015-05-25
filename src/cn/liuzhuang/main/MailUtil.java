@@ -26,6 +26,10 @@ import com.stlz.util.config.PropertiesUtil;
 
 /**
  * 邮件发送工具类
+ * 
+ * mailSender_r.jar: 可执行jar
+ * mailSender.jar:   可加载到构建路径中的jar包
+ * 
  */
 public class MailUtil {
 
@@ -108,17 +112,14 @@ public class MailUtil {
 		// check for addresses
 		return true;
 	}
-	
+
 	/**
 	 * 正式使用的Mail方法
 	 * 
-	 * 参数具体：
-	 * args[0]:邮件标题;
-	 * args[1]:邮件正文;
-	 * args[2]:邮件附件物理文件的绝对路径;
+	 * 参数具体： args[0]:邮件标题; args[1]:邮件正文; args[2]:邮件附件物理文件的绝对路径;
 	 * 
-	 * 执行Demo: java -jar mailSender.jar 邮件标题  邮件正文 附件1(要使用绝对路径)
-	 *     注意: 如果有多于1个附件的场合，通过在config.properties中修改attach.files=c:/a.txt,c:/b.txt来添加;
+	 * 执行Demo: java -jar mailSender_r.jar 邮件标题 邮件正文 附件1(要使用绝对路径) 注意:
+	 * 如果有多于1个附件的场合，通过在config.properties中修改attach.files=c:/a.txt,c:/b.txt来添加;
 	 * 
 	 */
 	public static void main(String[] args) {
@@ -136,10 +137,30 @@ public class MailUtil {
 		String password = config.get("password");// 密码
 		String mailTo = config.get("mailTo");// 收件箱
 
-		String subject = "测试邮件New";
-		String message = "这是一封由javaMail自动发出的测试邮件，请勿回复。";
-		subject = args[0];
-		message = args[1];
+		String subject = "测试邮件";
+		String message = "这是一封由javaMail自动发出的测试邮件，请勿回复！";
+
+		// 邮件标题 配置值
+		String subject_bool = config.get("mail.subject.flag");
+		String subject_text = config.get("mail.subject");
+		// 邮件正文 配置值
+		String message_bool = config.get("mail.message.flag");
+		String message_text = config.get("mail.message");
+
+		// 如果在config文件中设置为true, 邮件标题取自配置文件, 否则来自命令行参数
+		if ((subject_bool.trim().length() != 0)
+				&& (subject_bool.trim().compareToIgnoreCase("true") == 0)) {
+			subject = subject_text.trim();
+		} else {
+			subject = args[0];
+		}
+		// 如果在config文件中设置为true, 邮件正文取自配置文件, 否则来自命令行参数
+		if ((message_bool.trim().length() != 0)
+				&& (message_bool.trim().compareToIgnoreCase("flase") == 0)) {
+			message = message_text.trim();
+		} else {
+			message = args[1];
+		}
 
 		if (!datasCheck(host, mailFrom, mailTo))
 			return;
