@@ -27,8 +27,7 @@ import com.stlz.util.config.PropertiesUtil;
 /**
  * 邮件发送工具类
  * 
- * mailSender_r.jar: 可执行jar
- * mailSender.jar:   可加载到构建路径中的jar包
+ * mailSender_r.jar: 可执行jar mailSender.jar: 可加载到构建路径中的jar包
  * 
  */
 public class MailUtil {
@@ -118,10 +117,9 @@ public class MailUtil {
 	 * 
 	 * 参数具体： args[0]:邮件标题; args[1]:邮件正文; args[2]:邮件附件物理文件的绝对路径;
 	 * 
-	 * 执行Demo: java -jar mailSender_r.jar 邮件标题 邮件正文 附件1(要使用绝对路径) 
+	 * 执行Demo: java -jar mailSender_r.jar 邮件标题 邮件正文 附件1(要使用绝对路径)
 	 * 
-	 * 注意:
-	 * 如果有多于1个附件的场合，
+	 * 注意: 如果有多于1个附件的场合，
 	 * 通过在config.properties中修改attach.files=c:/a.txt,c:/b.txt来添加，
 	 * 并且需要设置attach.files.flag=true。
 	 * 
@@ -165,8 +163,6 @@ public class MailUtil {
 		} else {
 			message = args[1];
 		}
-		log.info("邮件标题:" + subject);
-		log.info("邮件内容:" + message);
 
 		if (!datasCheck(host, mailFrom, mailTo))
 			return;
@@ -193,9 +189,11 @@ public class MailUtil {
 		try {
 			log.info("准备邮件发送......");
 			log.info("邮件发送至：" + mailTo);
+			log.info("邮件标题:" + subject);
+			log.info("邮件内容:" + message);
 			sendEmailWithAttachments(host, port, mailFrom, password,
 					mailToArgs, subject, message, attachFiles);
-			log.info("邮件发送成功.");
+			log.info("邮件发送成功.\n");
 		} catch (Exception ex) {
 			log.info("发送失败.");
 			log.error(ex.getMessage());
